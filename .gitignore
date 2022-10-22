@@ -1,0 +1,15 @@
+**/bin/
+**/bootstrap/
+**/data/
+**/help/
+**/installs/
+**/junk/
+**/log/
+src/
+**/temp/
+**/build/
+**/dist/
+**/__pycache__/
+*.egg-info/
+*.log
+*.pyc

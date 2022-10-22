@@ -8,8 +8,11 @@ from ..nocodb import (
 from ..api import NocoDBAPI
 from ..utils import get_query_params
 
+import os
 import requests
-
+import json
+from requests_toolbelt import MultipartEncoder
+from mimetypes import MimeTypes
 
 class NocoDBRequestsClient(NocoDBClient):
     def __init__(self, auth_token: AuthToken, base_uri: str):
@@ -19,6 +22,19 @@ class NocoDBRequestsClient(NocoDBClient):
         )
         self.__session.headers.update({"Content-Type": "application/json"})
         self.__api_info = NocoDBAPI(base_uri)
+
+    # Project: https://all-apis.nocodb.com/#tag/Project
+    
+    def project_create(
+        self,
+        body
+    ):
+        return self.__session.post(
+            self.__api_info.get_project_uri(), 
+            json=body
+        ).json()
+
+    # DB table row: https://all-apis.nocodb.com/#tag/DB-table-row
 
     def table_row_list(
         self,
@@ -33,7 +49,7 @@ class NocoDBRequestsClient(NocoDBClient):
             params=get_query_params(filter_obj, params),
         )
         return response.json()
-
+    
     def table_row_create(
         self, project: NocoDBProject, table: str, body: dict
     ) -> dict:
@@ -51,6 +67,7 @@ class NocoDBRequestsClient(NocoDBClient):
     def table_row_update(
         self, project: NocoDBProject, table: str, row_id: int, body: dict
     ) -> dict:
+        print(self.__api_info.get_row_detail_uri(project, table, row_id)) # TODO 
         return self.__session.patch(
             self.__api_info.get_row_detail_uri(project, table, row_id),
             json=body,
@@ -77,10 +94,40 @@ class NocoDBRequestsClient(NocoDBClient):
             )
         ).json()
 
-    def project_create(
+    # DB view row: https://all-apis.nocodb.com/#tag/DB-view-row
+        
+    def table_view_row_list(
         self,
-        body
+        project: NocoDBProject,
+        table: str,
+        view: str,
+        filter_obj: Optional[WhereFilter] = None,
+        params: Optional[dict] = None,
+    ) -> dict:
+
+        response = self.__session.get(
+            self.__api_info.get_table_view_uri(project, table, view),
+            params=get_query_params(filter_obj, params),
+        )
+        return response.json()
+
+    # DB storage: https://all-apis.nocodb.com/#tag/Storage
+
+    def storage_upload(
+        self,
+        filename,
+        buffer,
+        filter_obj: Optional[WhereFilter] = None,
+        params: Optional[dict] = None
     ):
-        return self.__session.post(
-            self.__api_info.get_project_uri(), json=body
-        ).json()
+        mimetype = MimeTypes().guess_type(filename)[0]
+        form_data = MultipartEncoder(fields={'file': (filename, buffer, mimetype)})
+        self.__session.headers.update({"Content-Type": form_data.content_type})
+        r = self.__session.post(
+            self.__api_info.get_storage_uri(), 
+            params=get_query_params(filter_obj, params),
+            data=form_data
+        )
+        self.__session.headers.update({"Content-Type": "application/json"})
+        return r.json()
+

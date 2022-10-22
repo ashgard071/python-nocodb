@@ -5,6 +5,7 @@ from .nocodb import NocoDBProject
 class NocoDBAPIUris(Enum):
     V1_DB_DATA_PREFIX = "api/v1/db/data"
     V1_DB_META_PREFIX = "api/v1/db/meta"
+    V1_DB_STORAGE_PREFIX = "api/v1/db/storage"
 
 
 class NocoDBAPI:
@@ -15,6 +16,9 @@ class NocoDBAPI:
         self.__base_meta_uri = (
             f"{base_uri}/{NocoDBAPIUris.V1_DB_META_PREFIX.value}"
         )
+        self.__base_storage_uri = (
+            f"{base_uri}/{NocoDBAPIUris.V1_DB_STORAGE_PREFIX.value}"
+        )
 
     def get_table_uri(self, project: NocoDBProject, table: str) -> str:
         return "/".join(
@@ -23,6 +27,18 @@ class NocoDBAPI:
                 project.org_name,
                 project.project_name,
                 table,
+            )
+        )
+
+    def get_table_view_uri(self, project: NocoDBProject, table: str, view: str) -> str:
+        return "/".join(
+            (
+                self.__base_data_uri,
+                project.org_name,
+                project.project_name,
+                table,
+                'views',
+                view
             )
         )
 
@@ -68,3 +84,14 @@ class NocoDBAPI:
                 "projects"
             )
         )
+        
+    def get_storage_uri(
+        self,
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_storage_uri,
+                "upload"
+            )
+        )
+        
