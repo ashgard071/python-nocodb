@@ -13,6 +13,7 @@ import requests
 import json
 from requests_toolbelt import MultipartEncoder
 from mimetypes import MimeTypes
+from hachoir.parser.archive.sevenzip import Body
 
 class NocoDBRequestsClient(NocoDBClient):
     def __init__(self, auth_token: AuthToken, base_uri: str):
@@ -25,12 +26,67 @@ class NocoDBRequestsClient(NocoDBClient):
 
     # Project: https://all-apis.nocodb.com/#tag/Project
     
+    def project_list(
+        self
+    ):
+        return self.__session.get(
+            self.__api_info.get_project_uri()
+        ).json()
+
+#    TODO: unable to get this one working...
     def project_create(
         self,
         body
     ):
         return self.__session.post(
             self.__api_info.get_project_uri(), 
+            json=body
+        ).json()
+        
+    def project_delete(
+        self,
+        projectId
+    ):
+        return self.__session.delete(
+            self.__api_info.get_project_id_uri(projectId)
+        ).json()
+
+    # DB table: 
+    def table_list(
+        self,
+        projectId: str
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_uri(projectId)
+        ).json()
+    
+    def table_create(
+        self,
+        projectId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_table_uri(projectId), 
+            json=body
+        ).json()
+
+    # DB column : ...
+    def table_column_list(
+        self,
+        tableId: int
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_column_uri(tableId)
+        ).json()
+    
+    def table_column_create(
+        self,
+        tableId: int,
+        columnId: int,
+        body: dict
+    ):
+        return self.__session.post(
+            self.__api_info.get_table_column_detail_uri(tableId, columnId), 
             json=body
         ).json()
 
@@ -45,7 +101,7 @@ class NocoDBRequestsClient(NocoDBClient):
     ) -> dict:
 
         response = self.__session.get(
-            self.__api_info.get_table_uri(project, table),
+            self.__api_info.get_table_row_uri(project, table),
             params=get_query_params(filter_obj, params),
         )
         return response.json()
@@ -54,7 +110,7 @@ class NocoDBRequestsClient(NocoDBClient):
         self, project: NocoDBProject, table: str, body: dict
     ) -> dict:
         return self.__session.post(
-            self.__api_info.get_table_uri(project, table), json=body
+            self.__api_info.get_table_row_uri(project, table), json=body
         ).json()
 
     def table_row_detail(
@@ -67,7 +123,6 @@ class NocoDBRequestsClient(NocoDBClient):
     def table_row_update(
         self, project: NocoDBProject, table: str, row_id: int, body: dict
     ) -> dict:
-        print(self.__api_info.get_row_detail_uri(project, table, row_id)) # TODO 
         return self.__session.patch(
             self.__api_info.get_row_detail_uri(project, table, row_id),
             json=body,

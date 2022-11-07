@@ -20,7 +20,28 @@ class NocoDBAPI:
             f"{base_uri}/{NocoDBAPIUris.V1_DB_STORAGE_PREFIX.value}"
         )
 
-    def get_table_uri(self, project: NocoDBProject, table: str) -> str:
+    def get_table_column_uri(self, tableId: int) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "tables",
+                str(tableId),
+                "columns"
+            )
+        )
+
+    def get_table_column_detail_uri(self, tableId: int, columnId: int) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "tables",
+                str(tableId),
+                "columns",
+                str(columnId)
+            )
+        )
+
+    def get_table_row_uri(self, project: NocoDBProject, table: str) -> str:
         return "/".join(
             (
                 self.__base_data_uri,
@@ -82,6 +103,31 @@ class NocoDBAPI:
             (
                 self.__base_meta_uri,
                 "projects"
+            )
+        )
+        
+    def get_project_id_uri(
+        self,
+        project_id: str
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "projects",
+                project_id
+            )
+        )
+        
+    def get_table_uri(
+        self,
+        projectId: str,
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "projects",
+                projectId,
+                "tables"
             )
         )
         
