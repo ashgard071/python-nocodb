@@ -19,39 +19,85 @@ class NocoDBAPI:
         self.__base_storage_uri = (
             f"{base_uri}/{NocoDBAPIUris.V1_DB_STORAGE_PREFIX.value}"
         )
-
-    def get_table_column_uri(self, tableId: int) -> str:
+        
+    def get_project_uri(
+        self,
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "projects"
+            )
+        )
+        
+    def get_project_detail_uri(
+        self,
+        project_id: str
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "projects",
+                project_id
+            )
+        )
+        
+    def get_table_uri(
+        self,
+        projectId: str,
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "projects",
+                projectId,
+                "tables"
+            )
+        )
+        
+    def get_table_detail_uri(
+        self,
+        tableId: str,
+    ) -> str:
         return "/".join(
             (
                 self.__base_meta_uri,
                 "tables",
-                str(tableId),
-                "columns"
+                tableId
             )
         )
-
-    def get_table_column_detail_uri(self, tableId: int, columnId: int) -> str:
+        
+        
+    def get_table_view_uri(self, tableId: str) -> str:
         return "/".join(
             (
                 self.__base_meta_uri,
-                "tables",
-                str(tableId),
-                "columns",
-                str(columnId)
+                'tables',
+                tableId,
+                'views'
             )
         )
-
-    def get_table_row_uri(self, project: NocoDBProject, table: str) -> str:
+        
+    def get_table_view_detail_uri(self, viewId: str) -> str:
         return "/".join(
             (
-                self.__base_data_uri,
-                project.org_name,
-                project.project_name,
-                table,
+                self.__base_meta_uri,
+                'views',
+                viewId
             )
         )
-
-    def get_table_view_uri(self, project: NocoDBProject, table: str, view: str) -> str:
+        
+    def get_table_grid_view_uri(self, tableId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                'tables',
+                tableId,
+                'grids'
+            )
+        )
+        
+    def get_table_view_row_uri(self, project: NocoDBProject, table: str, view: str) -> str:
         return "/".join(
             (
                 self.__base_data_uri,
@@ -60,6 +106,55 @@ class NocoDBAPI:
                 table,
                 'views',
                 view
+            )
+        )
+        
+    def get_table_filter_uri(self, viewId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                'views',
+                viewId,
+                'filters'
+            )
+        )
+
+    def get_table_column_uri(self, tableId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "tables",
+                str(tableId),
+                "columns"
+            )
+        )
+        
+    def get_table_column_detail_uri(self, columnId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "columns",
+                str(columnId)
+            )
+        )
+        
+    def get_table_column_primary_uri(self, columnId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "columns",
+                str(columnId),
+                "primary"
+            )
+        )
+        
+    def get_table_row_uri(self, project: NocoDBProject, table: str) -> str:
+        return "/".join(
+            (
+                self.__base_data_uri,
+                project.org_name,
+                project.project_name,
+                table,
             )
         )
 
@@ -93,41 +188,6 @@ class NocoDBAPI:
                 str(row_id),
                 relation_type,
                 column_name,
-            )
-        )
-
-    def get_project_uri(
-        self,
-    ) -> str:
-        return "/".join(
-            (
-                self.__base_meta_uri,
-                "projects"
-            )
-        )
-        
-    def get_project_id_uri(
-        self,
-        project_id: str
-    ) -> str:
-        return "/".join(
-            (
-                self.__base_meta_uri,
-                "projects",
-                project_id
-            )
-        )
-        
-    def get_table_uri(
-        self,
-        projectId: str,
-    ) -> str:
-        return "/".join(
-            (
-                self.__base_meta_uri,
-                "projects",
-                projectId,
-                "tables"
             )
         )
         

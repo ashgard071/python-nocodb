@@ -10,7 +10,6 @@ from ..utils import get_query_params
 
 import os
 import requests
-import json
 from requests_toolbelt import MultipartEncoder
 from mimetypes import MimeTypes
 from hachoir.parser.archive.sevenzip import Body
@@ -33,7 +32,7 @@ class NocoDBRequestsClient(NocoDBClient):
             self.__api_info.get_project_uri()
         ).json()
 
-#    TODO: unable to get this one working...
+
     def project_create(
         self,
         body
@@ -43,12 +42,22 @@ class NocoDBRequestsClient(NocoDBClient):
             json=body
         ).json()
         
+    def project_update(
+        self,
+        projectId,
+        body
+    ):
+        return self.__session.patch(
+            self.__api_info.get_project_detail_uri(projectId), 
+            json=body
+        ).json()
+        
     def project_delete(
         self,
         projectId
     ):
         return self.__session.delete(
-            self.__api_info.get_project_id_uri(projectId)
+            self.__api_info.get_project_detail_uri(projectId)
         ).json()
 
     # DB table: 
@@ -70,25 +79,43 @@ class NocoDBRequestsClient(NocoDBClient):
             json=body
         ).json()
 
-    # DB column : ...
-    def table_column_list(
+    def table_read(
         self,
-        tableId: int
+        tableId: str
     ) -> dict:
         return self.__session.get(
-            self.__api_info.get_table_column_uri(tableId)
+            self.__api_info.get_table_detail_uri(tableId)
         ).json()
+    
+
+    # DB column : https://all-apis.nocodb.com/#tag/DB-table-column
     
     def table_column_create(
         self,
-        tableId: int,
-        columnId: int,
+        tableId: str,
         body: dict
     ):
         return self.__session.post(
-            self.__api_info.get_table_column_detail_uri(tableId, columnId), 
+            self.__api_info.get_table_column_uri(tableId), 
             json=body
         ).json()
+
+    def table_column_set_primary(
+        self,
+        columnId: str
+    ):
+        return self.__session.post(
+            self.__api_info.get_table_column_primary_uri(columnId)
+        ).json()
+        
+    def table_column_delete(
+        self,
+        columnId: str
+    ):
+        return self.__session.delete(
+            self.__api_info.get_table_column_detail_uri(columnId)
+        ).json()
+        
 
     # DB table row: https://all-apis.nocodb.com/#tag/DB-table-row
 
@@ -149,6 +176,34 @@ class NocoDBRequestsClient(NocoDBClient):
             )
         ).json()
 
+    # DB view: https://all-apis.nocodb.com/#tag/DB-view
+    
+    def table_view_list(
+        self,
+        tableId: str
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_view_uri(tableId)
+        ).json()
+
+    def table_view_update(
+        self,
+        viewId: str
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_view_detail_uri(viewId)
+        ).json()
+
+    def table_grid_view_create(
+        self,
+        tableId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_table_grid_view_uri(tableId),
+            json=body
+        ).json()
+
     # DB view row: https://all-apis.nocodb.com/#tag/DB-view-row
         
     def table_view_row_list(
@@ -161,10 +216,30 @@ class NocoDBRequestsClient(NocoDBClient):
     ) -> dict:
 
         response = self.__session.get(
-            self.__api_info.get_table_view_uri(project, table, view),
+            self.__api_info.get_table_view_row_uri(project, table, view),
             params=get_query_params(filter_obj, params),
         )
         return response.json()
+
+    # DB filter: https://all-apis.nocodb.com/#tag/DB-table-filter
+    
+    def table_filter_list(
+        self,
+        viewId: str
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_filter_uri(viewId)
+        ).json()
+        
+    def table_filter_create(
+        self,
+        viewId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_table_filter_uri(viewId),
+            json=body
+        ).json()
 
     # DB storage: https://all-apis.nocodb.com/#tag/Storage
 

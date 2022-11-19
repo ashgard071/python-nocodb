@@ -78,9 +78,10 @@ class NocoDBWhere:
 
 
 class NocoDBProject:
-    def __init__(self, org_name: str, project_name: str):
+    def __init__(self, org_name: str, project_name: str, project_id: str):
         self.project_name = project_name
         self.org_name = org_name
+        self.id = project_id
 
 
 class NocoDBClient:
