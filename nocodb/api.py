@@ -118,6 +118,16 @@ class NocoDBAPI:
                 'filters'
             )
         )
+        
+    def get_table_sort_uri(self, viewId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                'views',
+                viewId,
+                'sorts'
+            )
+        )
 
     def get_table_column_uri(self, tableId: str) -> str:
         return "/".join(
@@ -157,7 +167,18 @@ class NocoDBAPI:
                 table,
             )
         )
-
+        
+    def get_table_row_find_uri(self, project: NocoDBProject, table: str) -> str:
+        return "/".join(
+            (
+                self.__base_data_uri,
+                project.org_name,
+                project.project_name,
+                table,
+                "find-one"
+            )
+        )
+        
     def get_row_detail_uri(
         self, project: NocoDBProject, table: str, row_id: int
     ):

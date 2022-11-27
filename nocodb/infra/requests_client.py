@@ -126,9 +126,21 @@ class NocoDBRequestsClient(NocoDBClient):
         filter_obj: Optional[WhereFilter] = None,
         params: Optional[dict] = None,
     ) -> dict:
-
         response = self.__session.get(
             self.__api_info.get_table_row_uri(project, table),
+            params=get_query_params(filter_obj, params),
+        )
+        return response.json()
+    
+    def table_row_find_one(
+        self,
+        project: NocoDBProject,
+        table: str,
+        filter_obj: Optional[WhereFilter] = None,
+        params: Optional[dict] = None,
+    ) -> dict:
+        response = self.__session.get(
+            self.__api_info.get_table_row_find_uri(project, table),
             params=get_query_params(filter_obj, params),
         )
         return response.json()
@@ -188,10 +200,12 @@ class NocoDBRequestsClient(NocoDBClient):
 
     def table_view_update(
         self,
-        viewId: str
+        viewId: str,
+        body: dict
     ) -> dict:
-        return self.__session.get(
-            self.__api_info.get_table_view_detail_uri(viewId)
+        return self.__session.patch(
+            self.__api_info.get_table_view_detail_uri(viewId),
+            json=body
         ).json()
 
     def table_grid_view_create(
@@ -238,6 +252,26 @@ class NocoDBRequestsClient(NocoDBClient):
     ) -> dict:
         return self.__session.post(
             self.__api_info.get_table_filter_uri(viewId),
+            json=body
+        ).json()
+        
+    # DB sort: https://all-apis.nocodb.com/#tag/DB-table-sort
+    
+    def table_sort_list(
+        self,
+        viewId: str
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_sort_uri(viewId)
+        ).json()
+        
+    def table_sort_create(
+        self,
+        viewId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_table_sort_uri(viewId),
             json=body
         ).json()
 
