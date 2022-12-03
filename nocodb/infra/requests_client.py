@@ -8,11 +8,9 @@ from ..nocodb import (
 from ..api import NocoDBAPI
 from ..utils import get_query_params
 
-import os
 import requests
 from requests_toolbelt import MultipartEncoder
 from mimetypes import MimeTypes
-from hachoir.parser.archive.sevenzip import Body
 
 class NocoDBRequestsClient(NocoDBClient):
     def __init__(self, auth_token: AuthToken, base_uri: str):
@@ -87,7 +85,6 @@ class NocoDBRequestsClient(NocoDBClient):
             self.__api_info.get_table_detail_uri(tableId)
         ).json()
     
-
     # DB column : https://all-apis.nocodb.com/#tag/DB-table-column
     
     def table_column_create(
@@ -215,6 +212,37 @@ class NocoDBRequestsClient(NocoDBClient):
     ) -> dict:
         return self.__session.post(
             self.__api_info.get_table_grid_view_uri(tableId),
+            json=body
+        ).json()
+
+    def table_view_hide_all_columns(
+        self,
+        viewId: str,
+        filter_obj: Optional[WhereFilter] = None,
+        params: Optional[dict] = None    
+    ) -> dict:
+        print(get_query_params(filter_obj, params))
+        return self.__session.post(
+            self.__api_info.get_table_view_hide_all_columns_uri(viewId),
+            params=get_query_params(filter_obj, params),
+        ).json()
+        
+    def table_view_column_list(
+        self,
+        viewId: str
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_view_column_uri(viewId)
+        ).json()
+
+    def table_view_column_update(
+        self,
+        viewId: str,
+        columnId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.patch(
+            self.__api_info.get_table_view_column_detail_uri(viewId, columnId),
             json=body
         ).json()
 

@@ -97,6 +97,37 @@ class NocoDBAPI:
             )
         )
         
+    def get_table_view_hide_all_columns_uri(self, viewId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                'views',
+                viewId,
+                'hide-all'
+            )
+        )
+        
+    def get_table_view_column_uri(self, viewId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                'views',
+                viewId,
+                'columns'
+            )
+        )
+        
+    def get_table_view_column_detail_uri(self, viewId: str, columnId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                'views',
+                viewId,
+                'columns',
+                columnId
+            )
+        )
+        
     def get_table_view_row_uri(self, project: NocoDBProject, table: str, view: str) -> str:
         return "/".join(
             (
