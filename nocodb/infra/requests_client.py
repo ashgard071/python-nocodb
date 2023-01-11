@@ -11,6 +11,7 @@ from ..utils import get_query_params
 import requests
 from requests_toolbelt import MultipartEncoder
 from mimetypes import MimeTypes
+from nocodb.filters import EqFilter
 
 class NocoDBRequestsClient(NocoDBClient):
     def __init__(self, auth_token: AuthToken, base_uri: str):
@@ -164,6 +165,24 @@ class NocoDBRequestsClient(NocoDBClient):
             json=body,
         ).json()
 
+    def table_row_ltar_update(
+        self, project: NocoDBProject, table: str, row_id: int, fields: dict
+    ) -> dict:
+        try:
+            responses = []
+            for column_name in fields:
+                ltar_specs = fields[column_name]
+                if isinstance(ltar_specs, dict):
+                    lr_records = self.table_row_list(project, ltar_specs['lt_table'], EqFilter(ltar_specs['lt_column'], ltar_specs['lt_value']))
+                    lr_recordId = lr_records['list'][0]['Id']
+                    response = self.__session.post(
+                        self.__api_info.get_row_ltar_uri(project, table, row_id, column_name, lr_recordId),
+                    ).json()
+                    responses.append(response)
+            return responses
+        except Exception as e:
+            return {'msg': e}
+
     def table_row_delete(
         self, project: NocoDBProject, table: str, row_id: int
     ) -> int:
@@ -212,6 +231,16 @@ class NocoDBRequestsClient(NocoDBClient):
     ) -> dict:
         return self.__session.post(
             self.__api_info.get_table_grid_view_uri(tableId),
+            json=body
+        ).json()
+        
+    def table_gallery_view_create(
+        self,
+        tableId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_table_gallery_view_uri(tableId),
             json=body
         ).json()
 
@@ -303,6 +332,44 @@ class NocoDBRequestsClient(NocoDBClient):
             json=body
         ).json()
 
+    # DB table Webhook: https://all-apis.nocodb.com/#tag/DB-table-webhook
+
+    def table_webhook_list(
+        self,
+        tableId: str
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_webhook_uri(tableId)
+        ).json()
+        
+    def table_webhook_filter_list(
+        self,
+        hookId: str,
+    ) -> dict:
+        return self.__session.get(
+            self.__api_info.get_table_webhook_filter_uri(hookId)
+        ).json()
+        
+    def table_webhook_create(
+        self,
+        tableId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_table_webhook_uri(tableId),
+            json=body
+        ).json()
+        
+    def table_webhook_filter_create(
+        self,
+        hookId: str,
+        body: dict
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_table_webhook_filter_uri(hookId),
+            json=body
+        ).json()
+
     # DB storage: https://all-apis.nocodb.com/#tag/Storage
 
     def storage_upload(
@@ -323,3 +390,4 @@ class NocoDBRequestsClient(NocoDBClient):
         self.__session.headers.update({"Content-Type": "application/json"})
         return r.json()
 
+    

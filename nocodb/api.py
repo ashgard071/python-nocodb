@@ -97,6 +97,16 @@ class NocoDBAPI:
             )
         )
         
+    def get_table_gallery_view_uri(self, tableId: str) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                'tables',
+                tableId,
+                'galleries'
+            )
+        )
+        
     def get_table_view_hide_all_columns_uri(self, viewId: str) -> str:
         return "/".join(
             (
@@ -222,6 +232,22 @@ class NocoDBAPI:
                 str(row_id),
             )
         )
+    
+    def get_row_ltar_uri(
+        self, project: NocoDBProject, table: str, row_id: int, column_name: str, lt_row_id: int
+    ):
+        return "/".join(
+            (
+                self.__base_data_uri,
+                project.org_name,
+                project.project_name,
+                table,
+                str(row_id),
+                'mm',
+                column_name,
+                str(lt_row_id)
+            )
+        )    
 
     def get_nested_relations_rows_list_uri(
         self,
@@ -240,6 +266,32 @@ class NocoDBAPI:
                 str(row_id),
                 relation_type,
                 column_name,
+            )
+        )
+        
+    def get_table_webhook_uri(
+        self,
+        tableId: str
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "tables",
+                tableId,
+                "hooks"
+            )
+        )
+        
+    def get_table_webhook_filter_uri(
+        self,
+        hookId: str
+    ) -> str:
+        return "/".join(
+            (
+                self.__base_meta_uri,
+                "hooks",
+                hookId,
+                "filters"
             )
         )
         
