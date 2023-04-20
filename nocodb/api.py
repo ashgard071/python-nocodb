@@ -247,8 +247,8 @@ class NocoDBAPI:
                 column_name,
                 str(lt_row_id)
             )
-        )    
-
+        )
+        
     def get_nested_relations_rows_list_uri(
         self,
         project: NocoDBProject,

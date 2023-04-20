@@ -183,6 +183,13 @@ class NocoDBRequestsClient(NocoDBClient):
         except Exception as e:
             return {'msg': e}
 
+    def table_row_ltar_delete(
+        self, project: NocoDBProject, table: str, row_id: int, column_name: str, lr_recordId: int
+    ) -> dict:
+        return self.__session.post(
+            self.__api_info.get_row_ltar_uri(project, table, row_id, column_name, lr_recordId),
+        ).json()
+
     def table_row_delete(
         self, project: NocoDBProject, table: str, row_id: int
     ) -> int:

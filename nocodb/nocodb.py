@@ -91,15 +91,15 @@ class NocoDBClient:
     ) -> dict:
         pass
 
-    @abstractmethod
-    def table_row_list(
-        self,
-        project: NocoDBProject,
-        table: str,
-        filter_obj: Optional[WhereFilter] = None,
-        params: Optional[dict] = None,
-    ) -> dict:
-        pass
+#     @abstractmethod
+#     def table_row_list(
+#         self,
+#         project: NocoDBProject,
+#         table: str,
+#         filter_obj: Optional[WhereFilter] = None,
+#         params: Optional[dict] = None,
+#     ) -> dict:
+#         pass
 
     @abstractmethod
     def table_row_create(
